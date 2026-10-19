@@ -11,7 +11,7 @@ All data come from Federal Reserve Economic Data (FRED), a free public database 
 Data from FHFA and the Bureau of Labor Statistics are U.S. government works in the public domain and can be used and shared freely. The mortgage rate data (Freddie Mac) and listing data (Realtor.com) are copyrighted by their providers and redistributed by FRED with permission; FRED’s terms of use allow them for non-commercial research and education with proper citation [3]. Our project is non-commercial academic work that cites every series, and our code and processed data are shared in our GitHub repository.
 
 
-## Ethical Statements 
+# Ethical Statements 
 Our data are publicly available, aggregated to the city, metro, or national level, and contain no information about individual people or properties, so they pose no privacy risk. However, because housing affordability is a sensitive local issue, we will present our findings as associations rather than causes and acknowledge that metro-level data can hide differences in how rising costs affect different neighborhoods and communities.
 
 # Data Dictionary 
