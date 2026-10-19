@@ -5,6 +5,42 @@ We used Visual Studio (VS) Code and RStudio. For VS Code, we installed packages 
 
 
 ## Section 2: A Map of your documentation. 
+```text
+DS4002-Project2/
+│
+├── DATA/
+│   ├── marvel_movie_reviews.csv
+│   ├── marvel_movie_reviews_lexicon_sentiment.csv
+│   └── README.md
+│
+├── OUTPUT/
+│   ├── 1_scatter_lowess.png
+│   ├── 2_box_windows.png
+│   ├── 3_by_franchise.png
+│   ├── 4_per_movie_rho.png
+│   ├── 5_timing_hist.png
+│   ├── 6_pos_neg_rate.png
+│   ├── 7_Scatterplot_polarity_vs_days.png
+│   ├── 8_Linear_Regression_Results.png
+│   ├── 9_Linear_Regression_Assumptions.png
+│   ├── 10_Exponential_Regression_Results.png
+│   ├── 11_Quadratic_Regression_Results.png
+│   ├── 12_Model_Comparison_table.png
+│   ├── 13_ANOVA_Results.png
+│   └── 14_reviews_per_film.png
+│
+├── SCRIPTS/
+│   ├── 1_TMDB_Script.ipynb
+│   ├── 2_exploratory_plots.ipynb
+│   ├── 3_MI2_Exploratory_Graphs.Rmd
+│   ├── 4_TMDB_Lexicon_Sentiment.ipynb
+│   ├── 5_sentiment_time_analysis.ipynb
+│   └── 6_Statistical_Analysis_and_Hypothesis_Testing .Rmd
+│
+├── LICENSE.md
+├── requirements.txt
+└── README.md
+```
 
 
 ## Section 3: Instructions for reproducing your results.  
