@@ -17,7 +17,7 @@ Our data are publicly available, aggregated to the city, metro, or national leve
 # Data Dictionary 
 
 # Exploratory Data 
-<img width="3500" height="2100" alt="Screenshot 2026-10-19 at 2 37 31 PM" src="https://github.com/user-attachments/assets/1425b62e-353e-4a25-891e-5fcb8d8ece1c" />
+<img width="3000" height="2100" alt="Screenshot 2026-10-19 at 2 37 31 PM" src="https://github.com/user-attachments/assets/1425b62e-353e-4a25-891e-5fcb8d8ece1c" />
 
 **Figure 1. Standardized Time-Series Trends in Charlottesville Housing Market and Economic Indicators.** The variables exhibit different patterns over time, with mortgage rates generally declining after peaking around 1980, the HPI trending upward, and unemployment fluctuating sharply around 2020. 
 
