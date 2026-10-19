@@ -17,11 +17,11 @@ Our data are publicly available, aggregated to the city, metro, or national leve
 ## Data Dictionary 
 
 ## Exploratory Data 
-/><img width="4200" height="2100" alt="Screenshot 2026-10-19 at 2 37 31 PM" src="https://github.com/user-attachments/assets/1425b62e-353e-4a25-891e-5fcb8d8ece1c" />
+<img width="4000" height="2100" alt="Screenshot 2026-10-19 at 2 37 31 PM" src="https://github.com/user-attachments/assets/1425b62e-353e-4a25-891e-5fcb8d8ece1c" />
 
-Figure 1. Standardized Time-Series Trends in Charlottesville Housing Market and Economic Indicators. The variables exhibit different patterns over time, with mortgage rates generally declining after peaking around 1980, the HPI trending upward, and unemployment fluctuating sharply around 2020. 
+**Figure 1. Standardized Time-Series Trends in Charlottesville Housing Market and Economic Indicators.** The variables exhibit different patterns over time, with mortgage rates generally declining after peaking around 1980, the HPI trending upward, and unemployment fluctuating sharply around 2020. 
 
 
-<img width="4200" height="2100" alt="Screenshot 2026-10-19 at 2 38 31 PM" src="https://github.com/user-attachments/assets/d07259df-90ae-410c-91e6-3fd241c0da63" />
+<img width="4000" height="2100" alt="Screenshot 2026-10-19 at 2 38 31 PM" src="https://github.com/user-attachments/assets/d07259df-90ae-410c-91e6-3fd241c0da63" />
 
-Figure 2. Distribution of the Charlottesville All-Transactions House Price Index. This plot summarizes the distribution of index values. The span from 100 to values ranging around 400 in recent times suggests housing values in the Charlottesville metro area increased by 300% relative to the reference level
+**Figure 2. Distribution of the Charlottesville All-Transactions House Price Index.** This plot summarizes the distribution of index values. The span from 100 to values ranging around 400 in recent times suggests housing values in the Charlottesville metro area increased by 300% relative to the reference level
