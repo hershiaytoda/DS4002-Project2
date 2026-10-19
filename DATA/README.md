@@ -17,7 +17,6 @@ Our data are publicly available, aggregated to the city, metro, or national leve
 ## Data Dictionary 
 
 ## Exploratory Data 
-
-
+/><img width="4200" height="2100" alt="Screenshot 2026-10-19 at 2 37 31 PM" src="https://github.com/user-attachments/assets/1425b62e-353e-4a25-891e-5fcb8d8ece1c" />
 
 
