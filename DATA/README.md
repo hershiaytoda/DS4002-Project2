@@ -25,3 +25,11 @@ Our data are publicly available, aggregated to the city, metro, or national leve
 <img width="3500" height="2100" alt="Screenshot 2026-10-19 at 2 38 31 PM" src="https://github.com/user-attachments/assets/d07259df-90ae-410c-91e6-3fd241c0da63" />
 
 **Figure 2. Distribution of the Charlottesville All-Transactions House Price Index.** This plot summarizes the distribution of index values. The span from 100 to values ranging around 400 in recent times suggests housing values in the Charlottesville metro area increased by 300% relative to the reference level
+
+
+
+# References 
+
+[1] U.S. Federal Housing Finance Agency, “All-Transactions House Price Index for Charlottesville, VA (MSA),” FRED, Federal Reserve Bank of St. Louis. [Online]. Available: https://fred.stlouisfed.org/series/ATNHPIUS16820Q. [Accessed: Oct. 8, 2026].
+[2] W. K. Newey and K. D. West, “A simple, positive semi-definite, heteroskedasticity and autocorrelation consistent covariance matrix,” Econometrica, vol. 55, no. 3, pp. 703–708, May 1987, doi: 10.2307/1913610.
+[3] Federal Reserve Bank of St. Louis, “Legal Notices, Information and Disclaimers,” FRED, Federal Reserve Bank of St. Louis. [Online]. Available: https://fred.stlouisfed.org/legal/. [Accessed: Oct. 16, 2026].
