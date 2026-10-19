@@ -31,5 +31,9 @@ Our data are publicly available, aggregated to the city, metro, or national leve
 # References 
 
 [1] U.S. Federal Housing Finance Agency, “All-Transactions House Price Index for Charlottesville, VA (MSA),” FRED, Federal Reserve Bank of St. Louis. [Online]. Available: https://fred.stlouisfed.org/series/ATNHPIUS16820Q. [Accessed: Oct. 8, 2026].
+
+
 [2] W. K. Newey and K. D. West, “A simple, positive semi-definite, heteroskedasticity and autocorrelation consistent covariance matrix,” Econometrica, vol. 55, no. 3, pp. 703–708, May 1987, doi: 10.2307/1913610.
+
+
 [3] Federal Reserve Bank of St. Louis, “Legal Notices, Information and Disclaimers,” FRED, Federal Reserve Bank of St. Louis. [Online]. Available: https://fred.stlouisfed.org/legal/. [Accessed: Oct. 16, 2026].
