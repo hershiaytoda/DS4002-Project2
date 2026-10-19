@@ -1,48 +1,51 @@
-# DS4002 Project 2:  A Time-Series Analysis of Housing Market Factors in Charlottesville
+# Charlottesville Housing Market Factors
 
-## Section 1: Software and platform section
-We used Visual Studio (VS) Code and RStudio. For VS Code, we installed packages such as pandas (2.2.3), requests (2.32.4), NLTK (3.9.1), Matplotlib (3.10.0), NumPy (2.1.3), and Seaborn (0.13.2). For RStudio, we installed packages such as ggplot2 (4.0.2), car (3.1.3), dplyr (1.1.4), and knitr (1.51). We used Mac as our platform for everything.
+Study which changes in mortgage rates, unemployment, and active listings are
+associated with year-over-year Charlottesville house-price growth. Start with
+**DATA/cleaned_quarterly.csv** for the combined analysis. The three `hpi_vs_*.csv`
+files are simpler views for individual comparisons, generated from the same data.
 
+## 1. Software and platform
 
-## Section 2: A Map of your documentation. 
+Preprocessing: Python 3.12 and pandas 3.0.1, tested on Windows.
+Exploratory plots: R 4.6.1, using base R (no add-on packages).
+Install the Python dependency with `python -m pip install -r requirements.txt`.
+
+## 2. Repository contents
+
 ```text
-DS4002-Project2/
-│
-├── DATA/
-│   ├── marvel_movie_reviews.csv
-│   ├── marvel_movie_reviews_lexicon_sentiment.csv
-│   └── README.md
-│
-├── OUTPUT/
-│   ├── 1_scatter_lowess.png
-│   ├── 2_box_windows.png
-│   ├── 3_by_franchise.png
-│   ├── 4_per_movie_rho.png
-│   ├── 5_timing_hist.png
-│   ├── 6_pos_neg_rate.png
-│   ├── 7_Scatterplot_polarity_vs_days.png
-│   ├── 8_Linear_Regression_Results.png
-│   ├── 9_Linear_Regression_Assumptions.png
-│   ├── 10_Exponential_Regression_Results.png
-│   ├── 11_Quadratic_Regression_Results.png
-│   ├── 12_Model_Comparison_table.png
-│   ├── 13_ANOVA_Results.png
-│   └── 14_reviews_per_film.png
-│
-├── SCRIPTS/
-│   ├── 1_TMDB_Script.ipynb
-│   ├── 2_exploratory_plots.ipynb
-│   ├── 3_MI2_Exploratory_Graphs.Rmd
-│   ├── 4_TMDB_Lexicon_Sentiment.ipynb
-│   ├── 5_sentiment_time_analysis.ipynb
-│   └── 6_Statistical_Analysis_and_Hypothesis_Testing .Rmd
-│
-├── LICENSE.md
-├── requirements.txt
-└── README.md
+DATA/
+  Raw_Combined_ FRED_Data.csv   Original data; unchanged
+  cleaned_quarterly.csv        Aligned levels and annual changes; 172 quarters
+  hpi_vs_mortgage.csv          HPI and mortgage rates
+  hpi_vs_unemployment.csv      HPI and city unemployment
+  hpi_vs_listings.csv          HPI and active listings
+  README.md                    Cleaning, dictionary, sources, and analysis plan
+SCRIPTS/
+  preprocess_data.py           Step 1: clean and align the data
+  02_exploratory_plots.R       Step 2: reproduce the two exploratory plots
+  test_preprocess_data.py      Checks for alignment and missing-data errors
+OUTPUT/
+  quarterly_trends.png         Four series shown in their original units
+  hpi_growth_distribution.png  Distribution of the planned outcome
+requirements.txt               Python dependency
+LICENSE.md                     MIT license for code
+.gitignore                     Excludes temporary files and Python caches
 ```
 
+## 3. Reproduce the current work
 
-## Section 3: Instructions for reproducing your results.  
+1. Open a terminal in this repository and install the dependency above.
+2. Run `python SCRIPTS/preprocess_data.py` to rebuild the combined and three pairwise CSVs.
+3. Run `python -m unittest discover -s SCRIPTS -p "test_*.py"` to check it.
+4. Run `Rscript SCRIPTS/02_exploratory_plots.R` to rebuild both plots.
 
+Keep `DATA/Raw_Combined_ FRED_Data.csv`: it is the original input and is not
+downloaded by these scripts. The four generated CSVs and both PNGs can be deleted
+and recreated by steps 2 and 4, in that order. No compilation is needed; rerunning
+the scripts also overwrites existing generated files.
 
+MI3 still needs the planned analysis: Haero selects lags and fits the two MI2
+regressions; Hershi evaluates the results and diagnostics. They should add their
+scripts, outputs, dependencies, and run instructions here when finished. The
+[DATA guide](DATA/README.md) explains the handoff and remaining MI3 requirements.
