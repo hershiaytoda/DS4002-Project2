@@ -82,28 +82,29 @@ These steps reproduce every result in this project, from the raw FRED data to th
 
 ### Step 1: Get the data
 
-**Option A (recommended for exact reproduction):** use the CSV files already saved in the `DATA/` folder. These were downloaded from FRED on **[download date]**.
+**Use the raw combined CSV:** `[DATA/Raw_Combined_ FRED_Data.csv]`
 
-**Option B:** download fresh copies from FRED. On each page below, click **Download → CSV** and save the file into `DATA/` using the file name shown:
+This is the file our preprocessing script reads, so start from it to reproduce our results exactly. It contains all four FRED series side by side, each with its own date column, all downloaded from FRED on **[download date]**. Each series has a different frequency and start date, so values in the same row do **not** refer to the same time period. The preprocessing script in Step 2 aligns them by date. See the data dictionary in Section 2 for a description of every column.
 
-| Variable | FRED series ID | Frequency | Save as |
+**Original FRED files (for reference):** the individual CSV files we downloaded from FRED are also saved in `[DATA/original_fred/]`. They contain the same data as the combined file, in the original format FRED provides. You don't need them to reproduce our results, but they let you confirm where every value came from.
+
+| Variable | FRED series ID | Frequency | Original file |
 |---|---|---|---|
-| House price index (outcome) | [ATNHPIUS16820Q](https://fred.stlouisfed.org/series/ATNHPIUS16820Q) | Quarterly | `[DATA/ATNHPIUS16820Q.csv]` |
-| Unemployment rate | [CHAR851URN](https://fred.stlouisfed.org/series/CHAR851URN) | Monthly | `[DATA/CHAR851URN.csv]` |
-| 30-year mortgage rate | [MORTGAGE30US](https://fred.stlouisfed.org/series/MORTGAGE30US) | Weekly | `[DATA/MORTGAGE30US.csv]` |
-| Active listing count | [ACTLISCOU16820](https://fred.stlouisfed.org/series/ACTLISCOU16820) | Monthly | `[DATA/ACTLISCOU16820.csv]` |
+| House price index (outcome) | [ATNHPIUS51540A](https://fred.stlouisfed.org/series/ATNHPIUS51540A) | Quarterly | `[DATA/original_fred/All-transactions_House_Price_Index_ATNHPIUS51540A.csv]` |
+| Unemployment rate | [VACHAR0URN](https://fred.stlouisfed.org/series/VACHAR0URN) | Monthly | `[DATA/original_fred/Unemployment_Rate_VACHAR0URN.csv]` |
+| 30-year mortgage rate | [MORTGAGE30US](https://fred.stlouisfed.org/series/MORTGAGE30US) | Weekly | `[DATA/original_fred/30YR_Fixed_Rate_Mortgage_Avg_US_MORTGAGE30US.csv]` |
+| Active listing count | [ACTLISCOU16820](https://fred.stlouisfed.org/series/ACTLISCOU16820) | Monthly | `[DATA/original_fred/Housing_Inventory_Active_Listing_Count_ACTLISCOU16820.csv]` |
 
-**Important:** FRED revises past values and adds new observations over time. If you use Option B, your numbers may differ slightly from ours. To match our results exactly, use Option A.
-
+**Note:** do not download fresh copies from FRED to reproduce our results. FRED revises past values and adds new observations over time, so newly downloaded data may differ slightly from ours. The series links above are provided for reference only.
 ---
 
 ### Step 2: Preprocess the data
 
-**Run:** `[SCRIPTS/01_preprocessing.ipynb]`, all cells from top to bottom.
+**Run:** `[SCRIPTS/preprocess_data.ipynb]`, all cells from top to bottom.
 
 This notebook does the following, in order:
 
-1. **Loads** the four CSV files and converts each date column to a date format.
+1. **Loads** the raw combined CSV file (DATA/Raw_Combined_ FRED_Data.csv) and converts each date column to a date format.
 2. **Renames** columns to `hpi`, `unemployment`, `mortgage_rate`, and `active_listings`.
 3. **Converts everything to quarterly values.** For each calendar quarter (Q1 = Jan–Mar, Q2 = Apr–Jun, Q3 = Jul–Sep, Q4 = Oct–Dec), it takes the **mean of all available observations** in that quarter. Weekly mortgage rates are assigned to a quarter by their observation date. The house price index is already quarterly and is not changed.
    - Missing values are **not** filled in or estimated. For example, the unemployment value for October 2025 is missing in FRED, so the 2025 Q4 average uses only November and December.
