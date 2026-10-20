@@ -1,0 +1,27 @@
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:            hpi_yoy_pct   R-squared:                       0.692
+Model:                            OLS   Adj. R-squared:                  0.658
+Method:                 Least Squares   F-statistic:                     31.76
+Date:                Tue, 20 Oct 2026   Prob (F-statistic):           5.29e-09
+Time:                        18:44:16   Log-Likelihood:                -73.215
+No. Observations:                  31   AIC:                             154.4
+Df Residuals:                      27   BIC:                             160.2
+Df Model:                           3                                         
+Covariance Type:                  HAC                                         
+=================================================================================================
+                                    coef    std err          t      P>|t|      [0.025      0.975]
+-------------------------------------------------------------------------------------------------
+const                             7.0174      0.692     10.143      0.000       5.598       8.437
+active_listings_yoy_pct_lag4     -2.1070      0.832     -2.532      0.017      -3.814      -0.400
+mortgage_rate_yoy_pp_lag0         1.8991      0.344      5.527      0.000       1.194       2.604
+unemployment_rate_yoy_pp_lag1    -1.0064      0.383     -2.625      0.014      -1.793      -0.220
+==============================================================================
+Omnibus:                        3.605   Durbin-Watson:                   0.664
+Prob(Omnibus):                  0.165   Jarque-Bera (JB):                2.408
+Skew:                          -0.664   Prob(JB):                        0.300
+Kurtosis:                       3.316   Cond. No.                         1.79
+==============================================================================
+
+Notes:
+[1] Standard Errors are heteroscedasticity and autocorrelation robust (HAC) using 4 lags and without small sample correction
