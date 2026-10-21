@@ -1,0 +1,9 @@
+variable,first_quarter,last_quarter,n_obs,n_missing_within_span
+active_listings,2016-07-01,2026-04-01,40,0
+active_listings_yoy_pct,2017-07-01,2026-04-01,36,0
+hpi,1983-07-01,2026-04-01,172,0
+hpi_yoy_pct,1984-07-01,2026-04-01,168,0
+mortgage_rate_pct,1983-07-01,2026-04-01,172,0
+mortgage_rate_yoy_pp,1983-07-01,2026-04-01,172,0
+unemployment_rate_pct,1990-01-01,2026-04-01,145,1
+unemployment_rate_yoy_pp,1991-01-01,2026-04-01,141,1
