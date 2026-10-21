@@ -1,0 +1,416 @@
+---
+title: "03_variable_and_lag_analysis.R"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+# =====================================================================
+# SCRIPT:   03_variable_and_lag_analysis.R
+# PROJECT:  Spider-Sense: A Time-Series Analysis of Housing Market
+#           Factors in Charlottesville
+# COURSE:   DS 4002, Section 001  |  TEAM: Dataverse
+# AUTHOR:   Hershi Aytoda            |  DATE: October 21, 2026
+# =====================================================================
+
+
+# INPUT
+#   data/cleaned_data.csv  (one row per quarter) with these columns:
+#     quarter                   e.g., "1983Q3"
+#     quarter_start             first day of the quarter, e.g., 1983-07-01
+#     hpi                       FHFA All-Transactions HPI (index points)
+#     mortgage_rate_pct         30-year mortgage rate (quarterly average, %)
+#     unemployment_rate_pct     Charlottesville unemployment (quarterly avg, %)
+#     active_listings           active listing count (quarterly average)
+#     hpi_yoy_pct               HPI year-over-year % change
+#     mortgage_rate_yoy_pp      mortgage rate YoY change (percentage points)
+#     unemployment_rate_yoy_pp  unemployment YoY change (percentage points)
+#     active_listings_yoy_pct   listings YoY % change
+#
+# OUTPUT (all written to the eda_output/ folder)
+#   PNG figures
+
+#
+# HOW TO RUN
+#   1. Open the project folder in RStudio (or setwd() to the project
+#      root) so that data/cleaned_data.csv is found by its relative path.
+#   2. Run the whole file from the top: Source it, or in a terminal use
+#      Rscript 03_variable_and_lag_analysis.R
+#      Do not run chunks out of order; later sections use objects
+#      created in earlier ones.
+
+
+ 
+
+
+```{r}
+
+# 1. LOAD AND PREPARE THE DATA
+
+# Install any required package that is missing, then load all of them.
+# tidyverse supplies dplyr, tidyr, ggplot2, readr, purrr, tibble, etc.
+
+ 
+# Read the cleaned CSV, then:
+#  - convert quarter_start to a proper Date,
+#  - pull the year and the quarter number (1-4) out of the label
+#    "1983Q3" (characters 1-4 are the year, character 6 is the quarter),
+#  - sort in time order (lags depend on correct ordering).
+
+
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(tidyr)
+library(readr)
+library(scales)
+library(purrr)
+
+data <- read.csv("~/Desktop/DS 4002/cleaned_quarterly.csv")
+
+head(data)
+tail(data)
+
+LAST_FULL_QUARTER_START <- as.Date("2026-04-01")   # keeps through 2026Q2
+DATA_PATH <- "cleaned_data.csv"           # <- path to your cleaned dataset
+OUT_DIR   <- "eda_output"                 # plots and tables are saved here
+dir.create(OUT_DIR, showWarnings = FALSE)
+theme_set(theme_minimal(base_size = 12))
+ 
+save_plot <- function(p, name, w = 10, h = 6) {
+  ggsave(file.path(OUT_DIR, paste0(name, ".png")), p, width = w, height = h, dpi = 200)
+  print(p)
+}
+
+
+ 
+# Create the output folder (does nothing if it already exists).
+dir.create(OUT_DIR, showWarnings = FALSE)
+ 
+# Use a clean, simple ggplot theme for all figures.
+theme_set(theme_minimal(base_size = 12))
+ 
+# Helper: save a plot to OUT_DIR as a PNG and also display it.
+#   p    = a ggplot object
+#   name = file name without extension
+#   w, h = width and height in inches
+
+ 
+
+ 
+```
+
+
+```{r}
+
+
+df <- data %>%
+  mutate(
+    quarter_start = as.Date(quarter_start),
+    year = as.integer(substr(quarter, 1, 4)),
+    q = as.integer(substr(quarter, 6, 6))      # "1983Q3" -> 3
+  ) %>%
+  arrange(quarter_start)
+  
+# Drop partial quarters at the end of the data
+if (!is.na(LAST_FULL_QUARTER_START)) {
+  df <- df %>% filter(quarter_start <= LAST_FULL_QUARTER_START)
+}
+ 
+
+# Quarter-over-quarter (QoQ) % change in HPI. We use this (not YoY) for the
+# seasonality section because YoY comparisons cancel out seasonal patterns.
+df <- df %>% mutate(hpi_qoq_pct = (hpi / lag(hpi) - 1) * 100)
+ 
+# Names of the YoY columns. "core" = variables available for the long
+# period; "all" adds active listings, which only start in 2016.
+yoy_core <- c("hpi_yoy_pct", "mortgage_rate_yoy_pp", "unemployment_rate_yoy_pp")
+yoy_all  <- c(yoy_core, "active_listings_yoy_pct")
+ 
+# Define the two analysis windows from our project plan:
+#   Long-run = first quarter where HPI, mortgage, and unemployment YoY all exist
+#   Recent   = first quarter where listings YoY also exists
+# if_all() keeps rows where every listed column is non-missing.
+long_start   <- df %>% filter(if_all(all_of(yoy_core), ~ !is.na(.x))) %>%
+                  pull(quarter_start) %>% min()
+recent_start <- df %>% filter(if_all(all_of(yoy_all),  ~ !is.na(.x))) %>%
+                  pull(quarter_start) %>% min()
+ 
+# Store each window's start date and variables in one list for reuse below.
+windows <- list(
+  `Long-run` = list(from = long_start,   vars = yoy_core),
+  `Recent`   = list(from = recent_start, vars = yoy_all)
+)
+cat("Long-run window starts:", format(long_start), "\n")
+cat("Recent window starts:  ", format(recent_start), "\n")
+ 
+# Human-readable labels used for plot titles and axes.
+new_names <- c(
+  hpi = "House Price Index", mortgage_rate_pct = "Mortgage rate (%)",
+  unemployment_rate_pct = "Unemployment rate (%)", active_listings = "Active listings",
+  hpi_yoy_pct = "HPI YoY (%)", mortgage_rate_yoy_pp = "Mortgage YoY (pp)",
+  unemployment_rate_yoy_pp = "Unemployment YoY (pp)", active_listings_yoy_pct = "Listings YoY (%)"
+)
+ 
+```
+
+
+```{r}
+
+# 2. DATA COVERAGE TABLE
+# Purpose: show exactly when each variable starts and ends and how many
+# values are missing, since the source series do not line up in time.
+coverage <- df %>%
+  select(quarter_start, all_of(names(new_names))) %>%
+  # Reshape from one column per variable to one row per (quarter, variable).
+  pivot_longer(-quarter_start, names_to = "variable", values_to = "value") %>%
+  group_by(variable) %>%
+  summarise(
+    first_quarter = min(quarter_start[!is.na(value)]),   # earliest non-missing quarter
+    last_quarter  = max(quarter_start[!is.na(value)]),   # latest non-missing quarter
+    n_obs         = sum(!is.na(value)),                  # number of usable quarters
+    # Quarters missing in the middle of the variable's span (true gaps).
+    n_missing_within_span = sum(is.na(value) &
+                                quarter_start >= first_quarter &
+                                quarter_start <= last_quarter),
+    .groups = "drop"
+  )
+print(coverage)
+
+write_csv(coverage, file.path(OUT_DIR, "01_coverage_table.csv"))
+```
+
+
+```{r}
+# 3. TIME-SERIES PLOTS (faceted, with recession shading)
+
+# Purpose: see each variable's trend and big events. Each variable gets
+# its own panel because their scales differ widely.
+shade <- tibble(
+  xmin = as.Date(c("2008-01-01", "2020-01-01")),
+  xmax = as.Date(c("2009-07-01", "2020-07-01")),
+  label = c("Great Recession", "COVID")
+)
+ 
+ts_plot <- function(vars, title, name) {
+  d <- df %>%
+    select(quarter_start, all_of(vars)) %>%
+    pivot_longer(-quarter_start, names_to = "variable", values_to = "value") %>%
+    filter(!is.na(value)) %>%   # draw each series only where it has data
+    mutate(variable = factor(new_names[variable], levels = new_names[vars]))
+  p <- ggplot(d, aes(quarter_start, value)) +
+    geom_rect(data = shade, aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
+              inherit.aes = FALSE, fill = "grey70", alpha = 0.4) +
+    geom_line(linewidth = 0.7, color = "#2b6cb0") +
+    facet_wrap(~variable, scales = "free_y", ncol = 1) +   # separate y-axis per variable
+    labs(title = title, subtitle = "Grey bands: 2008-09 recession and 2020 COVID shock",
+         x = NULL, y = NULL, caption = "Source: FRED")
+  save_plot(p, name, h = 9)
+}
+ts_plot(yoy_all, "Year-over-year changes over time", "03_timeseries_yoy")
+ 
+```
+
+
+```{r}
+
+# 4. DISTRIBUTIONS AND SUMMARY STATISTICS
+# Purpose: see how each YoY variable is spread out (center, spread,
+# skew, outliers). YoY is used because raw levels mostly reflect trend.
+
+ 
+# Long-format data of the four YoY variables for faceted histograms.
+
+yoy_long <- df %>%
+  select(quarter_start, all_of(yoy_all)) %>%
+  pivot_longer(-quarter_start, names_to = "variable", values_to = "value") %>%
+  filter(!is.na(value)) %>%
+  mutate(variable = factor(new_names[variable], levels = new_names[yoy_all]))
+ 
+p_hist <- ggplot(yoy_long, aes(value)) +
+  geom_histogram(bins = 30, fill = "#2b6cb0", color = "white") +
+  facet_wrap(~variable, scales = "free") +   # each variable has its own x and y scale
+  labs(title = "Distributions of year-over-year changes", x = NULL, y = "Quarters")
+save_plot(p_hist, "04_histograms_yoy")
+ 
+# Summary statistics (n, mean, median, SD, min, max) for each variable
+# within each analysis window.
+
+summary_stats <- map_dfr(names(windows), function(w) {
+  d <- df %>% filter(quarter_start >= windows[[w]]$from)   # rows in this window
+  d %>%
+    select(all_of(windows[[w]]$vars)) %>%
+    pivot_longer(everything(), names_to = "variable", values_to = "value") %>%
+    group_by(variable) %>%
+    summarise(n = sum(!is.na(value)), mean = mean(value, na.rm = TRUE),
+              median = median(value, na.rm = TRUE), sd = sd(value, na.rm = TRUE),
+              min = min(value, na.rm = TRUE), max = max(value, na.rm = TRUE),
+              .groups = "drop") %>%
+    mutate(window = w, .before = 1)
+})
+print(summary_stats, n = Inf)
+write_csv(summary_stats, file.path(OUT_DIR, "03_summary_stats.csv"))
+
+
+
+```
+
+
+
+
+
+```{r}
+#5a. Correlation heatmaps
+
+# ---- 5a. Correlation heatmaps (how do the YoY variables relate?) ----
+# For each window, compute the correlation matrix using only the rows
+# where all of that window's variables are present.
+cor_long <- map_dfr(names(windows), function(w) {
+  d <- df %>% filter(quarter_start >= windows[[w]]$from) %>%
+         select(all_of(windows[[w]]$vars))
+  m <- cor(d, use = "complete.obs")
+  # Convert the matrix to long format so ggplot can draw tiles.
+  as_tibble(m, rownames = "var1") %>%
+    pivot_longer(-var1, names_to = "var2", values_to = "r") %>%
+    mutate(window = w)
+}) %>%
+  mutate(var1 = factor(new_names[var1], levels = new_names[yoy_all]),
+         var2 = factor(new_names[var2], levels = new_names[yoy_all]),
+         window = factor(window, levels = names(windows)))
+ 
+p_cor <- ggplot(cor_long, aes(var1, var2, fill = r)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = sprintf("%.2f", r)), size = 3.5) +   # print the r value in each tile
+  scale_fill_gradient2(low = "#c53030", mid = "white", high = "#2b6cb0",
+                       limits = c(-1, 1)) +                  # fixed -1 to +1 scale
+  facet_wrap(~window) +
+  labs(title = "Correlations among YoY variables", x = NULL, y = NULL) +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+save_plot(p_cor, "05_correlation_heatmaps", w = 12, h = 5.5)
+ 
+# ---- 5b. Lagged correlations with HPI growth ------------------------
+# For lag k, we compare HPI growth in quarter t with the predictor's
+# value in quarter t-k (shifted k quarters earlier). Lag 0 = same quarter.
+# This previews "how quickly do prices respond?" without fitting a model.
+predictors_all <- setdiff(yoy_all, "hpi_yoy_pct")   # the three predictors
+ 
+lag_cors <- map_dfr(names(windows), function(w) {
+  from  <- windows[[w]]$from
+  preds <- intersect(predictors_all, windows[[w]]$vars)   # listings only in Recent
+  map_dfr(preds, function(p) {
+    map_dfr(0:4, function(k) {
+      # Shift the predictor by k quarters BEFORE filtering to the window,
+      # so early rows in the window still get their earlier values.
+      tmp <- tibble(date = df$quarter_start,
+                    y = df$hpi_yoy_pct,
+                    x = lag(df[[p]], k)) %>%
+        filter(date >= from, !is.na(x), !is.na(y))   # use only complete pairs
+      tibble(window = w, predictor = p, lag = k, r = cor(tmp$y, tmp$x), n = nrow(tmp))
+    })
+  })
+})
+print(lag_cors, n = Inf)
+write_csv(lag_cors, file.path(OUT_DIR, "05_lag_correlations.csv"))
+ 
+# Bar chart of correlation by lag, one panel per predictor and window.
+# Blue bars are positive correlations and red bars are negative.
+p_lag <- lag_cors %>%
+  mutate(predictor = factor(new_names[predictor], levels = new_names[predictors_all]),
+         window = factor(window, levels = names(windows))) %>%
+  ggplot(aes(factor(lag), r, fill = r > 0)) +
+  geom_col(show.legend = FALSE) +
+  geom_hline(yintercept = 0) +
+  scale_fill_manual(values = c(`TRUE` = "#2b6cb0", `FALSE` = "#c53030")) +
+  facet_grid(window ~ predictor) +
+  labs(title = "Correlation with HPI growth by lag",
+       subtitle = "Lag k = predictor measured k quarters earlier",
+       caption = "Exploratory only: lags are chosen on the same data.",
+       x = "Lag (quarters)", y = "Correlation")
+save_plot(p_lag, "06_lag_correlations", w = 12, h = 6)
+ 
+```
+
+
+```{r}
+
+
+# 6. SEASONALITY: WHICH QUARTER OF THE YEAR LOOKS BEST?
+# Purpose: describe within-year patterns. For HPI we use the QoQ change.
+# For the other variables we use each quarter's difference from that
+# calendar year's average, which removes long-run trends so only the
+# within-year pattern remains. Only complete years (all 4 quarters) are used.
+
+# Mortgage rate, unemployment, and listings: deviation from the year's mean.
+#   mortgage and unemployment -> difference in percentage points
+#   listings                  -> percent above/below the year's average
+seas_levels <- df %>%
+  select(year, q, quarter_start, mortgage_rate_pct, unemployment_rate_pct, active_listings) %>%
+  pivot_longer(c(mortgage_rate_pct, unemployment_rate_pct, active_listings),
+               names_to = "metric", values_to = "value") %>%
+  group_by(metric, year) %>%
+  filter(sum(!is.na(value)) == 4) %>%     # keep only years with all 4 quarters
+  mutate(dev = if_else(metric == "active_listings",
+                       100 * (value / mean(value) - 1),
+                       value - mean(value))) %>%
+  ungroup() %>%
+  transmute(year, q, metric, value = dev)
+ 
+# HPI: the QoQ % change is already a within-year-comparable quantity.
+seas_hpi <- df %>%
+  filter(!is.na(hpi_qoq_pct)) %>%
+  transmute(year, q, metric = "hpi_qoq_pct", value = hpi_qoq_pct)
+ 
+# Combine and attach readable metric labels (factor order sets panel order).
+seas <- bind_rows(seas_hpi, seas_levels) %>%
+  mutate(metric = factor(metric,
+         levels = c("hpi_qoq_pct", "mortgage_rate_pct", "unemployment_rate_pct", "active_listings"),
+         labels = c("HPI QoQ change (%)", "Mortgage rate vs. year avg (pp)",
+                    "Unemployment vs. year avg (pp)", "Active listings vs. year avg (%)")))
+ 
+# Boxplots of each metric by quarter of the year (Q1 to Q4).
+p_seas <- ggplot(seas, aes(factor(q, labels = paste0("Q", 1:4)), value)) +
+  geom_hline(yintercept = 0, color = "grey50") +
+  geom_boxplot(fill = "#bee3f8", outlier.alpha = 0.5) +
+  facet_wrap(~metric, scales = "free_y") +
+  labs(title = "Seasonal pattern by quarter of year", x = NULL, y = NULL,
+       caption = "Listings are only available from 2016, so that panel has far fewer observations.")
+save_plot(p_seas, "08_seasonality_boxplots", w = 11, h = 7)
+ 
+# Average, standard error, and sample size for each metric and quarter.
+seas_summary <- seas %>%
+  group_by(metric, q) %>%
+  summarise(n = n(), mean = mean(value), se = sd(value) / sqrt(n()), .groups = "drop")
+print(seas_summary, n = Inf)
+
+# ---- Descriptive "buyer-friendliness" scorecard ----------------------
+# We rank the four quarters on each metric. "Buyer-friendly" means:
+# lower price growth, lower mortgage rate, lower unemployment (a healthier
+# job market), and MORE listings (more choice). direction = 1 means
+# lower is better; -1 means higher is better. This is descriptive only
+# and is not financial advice. Change signs here to alter the definition.
+direction <- c("HPI QoQ change (%)" = 1, "Mortgage rate vs. year avg (pp)" = 1,
+               "Unemployment vs. year avg (pp)" = 1, "Active listings vs. year avg (%)" = -1)
+ 
+scorecard <- seas_summary %>%
+  mutate(signed = mean * direction[as.character(metric)]) %>%
+  group_by(metric) %>%
+  mutate(rank = rank(signed)) %>%        # 1 = most buyer-friendly quarter for that metric
+  ungroup()
+ 
+# Sum of ranks across metrics (lowest total = most buyer-friendly overall).
+total_rank <- scorecard %>% group_by(q) %>% summarise(total_rank = sum(rank), .groups = "drop")
+print(total_rank)
+
+p_score <- ggplot(scorecard, aes(factor(q, labels = paste0("Q", 1:4)), metric, fill = rank)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = rank)) +
+  scale_fill_gradient(low = "#9ae6b4", high = "#fbb6b6", breaks = 1:4,
+                      name = "Rank\n(1 = bxest for buyer)") +
+  labs(title = "Which quarter looks best for a buyer? (descriptive, not advice)",
+       subtitle = "Ranks of average seasonal pattern; flip the rankings for a seller's view",
+       x = NULL, y = NULL)
+save_plot(p_score, "09_quarter_scorecard", w = 10, h = 4)
+ 
+ 
+
+```
