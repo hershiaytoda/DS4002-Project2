@@ -163,35 +163,45 @@ Existing expanded EDA outputs are saved in `OUTPUT/` as `01_coverage_table.csv`,
 
 ---
 
-### Step 4: Select the time lag for each predictor
+### Step 4: Select time lags and fit the regression models
 
-**Run:** `[SCRIPTS/03_lag_selection.ipynb]`
+**Run:** `SCRIPTS/04_regression_models.ipynb`. Open it in Jupyter and choose **Kernel → Restart & Run All**.
 
-For each dataset separately, and for each predictor, this notebook calculates the Pearson correlation between house price growth and the predictor at lags of 0, 1, 2, 3, and 4 quarters. The lag with the **largest absolute correlation** is selected for that predictor. All five correlations are saved, not only the selected one.
+The notebook requires `pandas`, `numpy`, and `statsmodels`. It reads `DATA/cleaned_quarterly.csv` from Step 2 and finds the `DATA/` folder automatically, so it can be run from either the main repository folder or the `SCRIPTS/` folder. No settings need to be changed to reproduce our results.
 
-**Output:** `[OUTPUT/lag_correlations.csv]`, a table of all correlations with the selected lag marked for each predictor and dataset.
+The notebook does the following, in order:
 
----
+1. **Loads the cleaned data** with one row per calendar quarter, keeping quarters with blank values so that shifting by *k* rows always means *k* calendar quarters. It then defines two models, each using the quarters where all of its variables are available:
+   - **Long-run model:** yearly house price growth (`hpi_yoy_pct`) explained by unemployment and mortgage rate changes (`unemployment_rate_yoy_pp`, `mortgage_rate_yoy_pp`)
+   - **Recent model:** the same variables plus active listing changes (`active_listings_yoy_pct`)
+2. **Selects a time lag for each predictor.** For each model and predictor, it calculates the Pearson correlation between house price growth and the predictor measured 0, 1, 2, 3, and 4 quarters earlier. All five lags are compared on the same set of quarters. The lag with the largest absolute correlation is selected.
+3. **Checks how reliable each selected lag is.** Year-over-year changes overlap by 3 of 4 quarters, so correlations at neighboring lags are naturally similar. The notebook resamples the data in blocks of 8 consecutive quarters (a moving block bootstrap, 2,000 resamples, random seed 0) and records how often each lag is selected. A lag selected in at least 70% of resamples is marked as clear; otherwise, its response time should be reported as a range of lags.
+4. **Builds each model's dataset.** Each predictor is shifted by its selected lag, quarters with missing values are dropped, and the predictors are standardized (mean 0, standard deviation 1). House price growth is left in percent units.
+5. **Fits the regressions.** Each model is an ordinary least squares (OLS) regression with an intercept, using Newey-West standard errors with a maximum lag of 4 quarters and two-sided t-tests at α = 0.05.
+6. **Creates results tables** with coefficients, 95% confidence intervals, p-values, predictor rankings by standardized coefficient size, variance inflation factors (VIF), R², and adjusted R², and saves all outputs.
 
-### Step 5: Fit the regression models
+**Outputs** (saved in `OUTPUT/`):
 
-**Run:** `[SCRIPTS/04_regression_models.ipynb]`
+| File | Contents |
+|---|---|
+| `lag_correlations.csv` | Correlation between price growth and each predictor at lags 0–4, with the selected lag marked |
+| `lag_stability.csv` | Percentage of bootstrap resamples in which each lag was selected, and whether the selected lag is clear (≥ 70%) |
+| `results_table.csv` | Standardized coefficients, Newey-West standard errors, 95% CIs, p-values, significance, rank, and VIF for each predictor |
+| `model_summary.csv` | Sample size, R², adjusted R², and number of significant predictors for each model |
+| `long_run_fitted_residuals.csv`, `recent_fitted_residuals.csv` | Actual, fitted, and residual price growth for each quarter (used for residual plots in Step 5) |
+| `long_run_model_summary.txt`, `recent_model_summary.txt` | Full `statsmodels` regression output for each model |
 
-For each dataset, this notebook:
-1. **Standardizes the predictors** (subtracts the mean and divides by the standard deviation, calculated within that dataset). Each predictor is used at the lag selected in Step 4. The outcome, house price growth, is left in percent units.
-2. **Drops rows** with missing values created by lagging.
-3. **Fits an ordinary least squares (OLS) multiple regression** with an intercept, using Newey-West standard errors with a maximum lag of 4 quarters. In `statsmodels`, this is:
-```python
-   import statsmodels.api as sm
-   model = sm.OLS(y, sm.add_constant(X)).fit(cov_type="HAC", cov_kwds={"maxlags": 4})
-```
-   Here `y` is year-over-year house price growth, and `X` contains the standardized, lagged predictors.
+**Check:** if you are using our data snapshot, the notebook should produce these values:
 
-**Output:** `[OUTPUT/long_run_model_summary.txt]` and `[OUTPUT/recent_model_summary.txt]`.
+| | Long-run model | Recent model |
+|---|---|---|
+| Regression sample | 1991Q2 – 2026Q2 (140 quarters) | 2018Q3 – 2026Q2 (31 quarters) |
+| Selected lags | Mortgage rate: 0, Unemployment: 1 | Mortgage rate: 0, Unemployment: 1, Active listings: 4 |
+| R² / Adjusted R² | 0.133 / 0.121 | 0.692 / 0.658 |
 
----
+The reliability check takes about 10–20 seconds to run. Because the random seed is fixed, it produces the same percentages every time.
 
-### Step 6: Evaluate the models and create results figures
+### Step 5: Evaluate the models and create results figures
 
 **Run:** `[SCRIPTS/05_evaluation.ipynb]`
 
