@@ -5,7 +5,15 @@ import unittest
 
 import pandas as pd
 
-from preprocess_data import ROOT, SOURCES, aggregate, build_quarterly, read_sources
+from importlib import import_module
+
+# Numbered script names must be imported through importlib.
+preprocess = import_module("01_preprocess_data")
+ROOT = preprocess.ROOT
+SOURCES = preprocess.SOURCES
+aggregate = preprocess.aggregate
+build_quarterly = preprocess.build_quarterly
+read_sources = preprocess.read_sources
 
 
 class PreprocessingTests(unittest.TestCase):

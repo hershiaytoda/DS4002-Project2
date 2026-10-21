@@ -1,6 +1,6 @@
 """Step 1: clean the FRED snapshot and export combined/pairwise quarterly data.
 
-Run from any directory: python SCRIPTS/preprocess_data.py
+Run from any directory: python SCRIPTS/01_preprocess_data.py
 Input: DATA/Raw_Combined_ FRED_Data.csv (never modified).
 Output: DATA/cleaned_quarterly.csv (172 quarters in the supplied snapshot).
 Also exports hpi_vs_mortgage.csv, hpi_vs_unemployment.csv, hpi_vs_listings.csv

@@ -18,7 +18,7 @@ and use the same date window when comparing strengths across predictors.
 
 ## Cleaning
 
-`SCRIPTS/preprocess_data.py` reads each series using its own dates, validates
+`SCRIPTS/01_preprocess_data.py` reads each series using its own dates, validates
 numbers/dates and duplicate keys, then joins by calendar quarter. HPI stays as
 observed. Mortgage rates are averaged across weekly observations in the quarter;
 unemployment and listings are averaged across the three months. Listings measure

@@ -1,6 +1,6 @@
 # Step 2: reproduce the two exploratory figures required by MI3.
 # Run from the repository root: Rscript SCRIPTS/02_exploratory_plots.R
-# Input: DATA/cleaned_quarterly.csv, produced by preprocess_data.py.
+# Input: DATA/cleaned_quarterly.csv, produced by 01_preprocess_data.py.
 # Outputs: OUTPUT/quarterly_trends.png and OUTPUT/hpi_growth_distribution.png.
 # Uses base R only. These figures describe the data; they do not test hypotheses.
 
