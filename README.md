@@ -13,44 +13,48 @@ Install the Python dependency with `python -m pip install -r requirements.txt`.
 ## Section 2: A Map of our documentation
 
 ```text
-DS-4002-Project-1/
-│
+DS4002-Project2/
 ├── DATA/
-│   ├── Raw_Combined_ FRED_Data.csv   Original data; unchanged
-│   ├── cleaned_quarterly.csv        Aligned levels and annual changes; 172 quarters
-│   ├── hpi_vs_mortgage.csv          HPI and mortgage rates
-│   ├── hpi_vs_unemployment.csv      HPI and city unemployment
-│   ├── hpi_vs_listings.csv          HPI and active listings
-│   └── README.md                    Cleaning, dictionary, sources, and analysis plan
-│
+│   ├── original_fred/              Individual source CSVs (see Step 1)
+│   ├── Raw_Combined_ FRED_Data.csv  Raw input to preprocessing; unchanged
+│   ├── cleaned_quarterly.csv       Combined levels and annual changes; 172 quarters
+│   ├── hpi_vs_mortgage.csv         HPI and mortgage rates; 172 quarters
+│   ├── hpi_vs_unemployment.csv     HPI and city unemployment; 146 quarters
+│   ├── hpi_vs_listings.csv         HPI and active listings; 40 quarters
+│   └── README.md                  Cleaning, data dictionary, sources, and analysis plan
 ├── OUTPUT/
-│   ├── []
-│   ├── []
-│   ├── []
-│   ├── []
-│   ├── []
-│   ├── []
-│   ├── []
-│   ├── []
-│   ├── []
-│   ├── []
-│   ├── []
-│   ├── []
-│   ├── []
-│   └── []
-│
+│   ├── quarterly_trends.png        Initial plots of the four series in original units
+│   ├── hpi_growth_distribution.png Initial histogram of annual HPI growth
+│   ├── 01_coverage_table.csv        Variable coverage and missing-value counts
+│   ├── 02_timeseries_yoy.png        Annual-change time-series panels
+│   ├── 03_summary_stats.csv         Summary statistics by analysis window
+│   ├── 04_histograms_yoy.png        Annual-change distributions
+│   ├── 05_correlation_heatmaps.png  Correlations by analysis window
+│   ├── 06_lag_correlations.png      Exploratory correlations at lags 0–4
+│   ├── 07_seasonality_boxplots.png  Seasonal patterns by calendar quarter
+│   ├── 08_quarter_scorecard.png     Descriptive seasonal rankings
+│   ├── lag_correlations.csv         Modeling lag correlations and selections
+│   ├── lag_stability.csv            Lag-selection stability results
+│   ├── long_run_model_summary.txt   Long-run regression summary
+│   ├── recent_model_summary.txt     Recent regression summary
+│   ├── model_summary.csv            Model sample sizes and fit statistics
+│   ├── results_table.csv            Coefficients, uncertainty, p-values, and VIF
+│   ├── long_run_fitted_residuals.csv Long-run fitted values and residuals
+│   └── recent_fitted_residuals.csv   Recent fitted values and residuals
 ├── SCRIPTS/
-│   ├── 01_preprocess_data.py           Step 1: clean and align the data
-│   ├── 02_exploratory_plots.R       Step 2: reproduce the two exploratory plots
-│   ├── test_preprocess_data.py      Checks for alignment and missing-data errors
-│   ├── []
-│   ├── []
-│   └── []
-├── LICENSE.md                     MIT license for code
-├── requirements.txt               Python dependency
-├── .gitignore                     Excludes temporary files and Python caches
-└── README.md
+│   ├── 01_preprocess_data.py         Clean, align, and export quarterly data
+│   ├── 02_exploratory_plots.R        Generate the two initial descriptive plots
+│   ├── 03_variable_and_lag_analysis.Rmd Expanded EDA, lags, and seasonality
+│   └── 04_regression_models.ipynb    Select lags, fit models, and export results
+├── LICENSE.md                       MIT license for code
+├── requirements.txt                 Python preprocessing dependency (pandas)
+├── .gitignore                       Temporary files and Python caches
+└── README.md                        Project overview and reproduction instructions
 ```
+
+The script prefixes indicate the analysis sequence; the reproduction instructions
+below also include setup and data acquisition. See Step 3 for the expanded EDA's
+current path settings and differences between generated and committed filenames.
 
 ## Section 3: Instructions for Reproducing Our Results
 
@@ -82,20 +86,23 @@ These steps reproduce every result in this project, from the raw FRED data to th
 
 ### Step 1: Get the data
 
-**Use the raw combined CSV:** `[DATA/Raw_Combined_ FRED_Data.csv]`
+Use the included [raw combined CSV](<DATA/Raw_Combined_ FRED_Data.csv>) as the input to `SCRIPTS/01_preprocess_data.py`. No additional download is required.
 
-This is the file our preprocessing script reads, so start from it to reproduce our results exactly. It contains all four FRED series side by side, each with its own date column, all downloaded from FRED on **[download date]**. Each series has a different frequency and start date, so values in the same row do **not** refer to the same time period. The preprocessing script in Step 2 aligns them by date. See the data dictionary in Section 2 for a description of every column.
+The file contains 2,898 rows with four independent date/value pairs. Each series has its own frequency and start date, so values on the same raw row do **not** necessarily describe the same time period. Step 2 aligns the observations by calendar quarter. See [DATA/README.md](DATA/README.md) for the raw and cleaned column dictionaries, missing-data rules, and source references.
 
-**Original FRED files (for reference):** the individual CSV files we downloaded from FRED are also saved in `[DATA/original_fred/]`. They contain the same data as the combined file, in the original format FRED provides. You don't need them to reproduce our results, but they let you confirm where every value came from.
+The individual source CSVs are also included in `DATA/original_fred/` for reference. The preprocessing script reads the combined file, rather than these individual files.
 
-| Variable | FRED series ID | Frequency | Original file |
+| Variable | FRED series ID in the source CSV | Frequency | Included source file |
 |---|---|---|---|
-| House price index (outcome) | [ATNHPIUS51540A](https://fred.stlouisfed.org/series/ATNHPIUS51540A) | Quarterly | `[DATA/original_fred/All-transactions_House_Price_Index_ATNHPIUS51540A.csv]` |
-| Unemployment rate | [VACHAR0URN](https://fred.stlouisfed.org/series/VACHAR0URN) | Monthly | `[DATA/original_fred/Unemployment_Rate_VACHAR0URN.csv]` |
-| 30-year mortgage rate | [MORTGAGE30US](https://fred.stlouisfed.org/series/MORTGAGE30US) | Weekly | `[DATA/original_fred/30YR_Fixed_Rate_Mortgage_Avg_US_MORTGAGE30US.csv]` |
-| Active listing count | [ACTLISCOU16820](https://fred.stlouisfed.org/series/ACTLISCOU16820) | Monthly | `[DATA/original_fred/Housing_Inventory_Active_Listing_Count_ACTLISCOU16820.csv]` |
+| Charlottesville metro house price index (outcome) | `ATNHPIUS16820Q` | Quarterly | [HPI CSV](DATA/original_fred/All-transactions_House_Price_Index_ATNHPIUS51540A.csv) |
+| Charlottesville city unemployment rate | `VACHAR0URN` | Monthly | [Unemployment CSV](DATA/original_fred/Unemployment_Rate_VACHAR0URN.csv) |
+| U.S. 30-year fixed mortgage rate | `MORTGAGE30US` | Weekly | [Mortgage CSV](DATA/original_fred/30YR_Fixed_Rate_Mortgage_Avg_US_MORTGAGE30US.csv) |
+| Charlottesville metro active listing count | `ACTLISCOU16820` | Monthly | [Listings CSV](DATA/original_fred/Housing_Inventory_Active_Listing_Count_ACTLISCOU16820.csv) |
 
-**Note:** do not download fresh copies from FRED to reproduce our results. FRED revises past values and adds new observations over time, so newly downloaded data may differ slightly from ours. The series links above are provided for reference only.
+**HPI filename note:** the included HPI file is named with `ATNHPIUS51540A`, but its column header identifies the quarterly metro series `ATNHPIUS16820Q`. The table above follows the file contents; keep the existing filename when locating the supplied file.
+
+Use the supplied snapshot to reproduce the committed results. Newly downloaded FRED data may contain revisions or additional observations. The repository's data documentation records source access dates, but does not establish a single download date for the combined file.
+
 ---
 
 ### Step 2: Preprocess the data
