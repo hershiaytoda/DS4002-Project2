@@ -15,7 +15,7 @@ output:
 
 
 # INPUT
-#   data/cleaned_data.csv  (one row per quarter) with these columns:
+#   DATA/cleaned_quarterly.csv (one row per quarter) with these columns:
 #     quarter                   e.g., "1983Q3"
 #     quarter_start             first day of the quarter, e.g., 1983-07-01
 #     hpi                       FHFA All-Transactions HPI (index points)
@@ -33,7 +33,7 @@ output:
 #
 # HOW TO RUN
 #   1. Open the project folder in RStudio (or setwd() to the project
-#      root) so that data/cleaned_data.csv is found by its relative path.
+#      root) so that DATA/cleaned_quarterly.csv is found by its relative path.
 #   2. Run the whole file from the top: Source it, or in a terminal use
 #      Rscript 03_variable_and_lag_analysis.R
 #      Do not run chunks out of order; later sections use objects
@@ -66,13 +66,13 @@ library(readr)
 library(scales)
 library(purrr)
 
-data <- read.csv("~/Desktop/DS 4002/cleaned_quarterly.csv")
+DATA_PATH <- "DATA/cleaned_quarterly.csv"  # relative to the repository root
+data <- read.csv(DATA_PATH)
 
 head(data)
 tail(data)
 
 LAST_FULL_QUARTER_START <- as.Date("2026-04-01")   # keeps through 2026Q2
-DATA_PATH <- "cleaned_data.csv"           # <- path to your cleaned dataset
 OUT_DIR   <- "eda_output"                 # plots and tables are saved here
 dir.create(OUT_DIR, showWarnings = FALSE)
 theme_set(theme_minimal(base_size = 12))
