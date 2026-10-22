@@ -23,29 +23,48 @@ DS4002-Project2/
 │   ├── hpi_vs_listings.csv         HPI and active listings; 40 quarters
 │   └── README.md                  Cleaning, data dictionary, sources, and analysis plan
 ├── OUTPUT/
-│   ├── quarterly_trends.png        Initial plots of the four series in original units
-│   ├── hpi_growth_distribution.png Initial histogram of annual HPI growth
-│   ├── 01_coverage_table.csv        Variable coverage and missing-value counts
-│   ├── 02_timeseries_yoy.png        Annual-change time-series panels
-│   ├── 03_summary_stats.csv         Summary statistics by analysis window
-│   ├── 04_histograms_yoy.png        Annual-change distributions
-│   ├── 05_correlation_heatmaps.png  Correlations by analysis window
-│   ├── 06_lag_correlations.png      Exploratory correlations at lags 0–4
-│   ├── 07_seasonality_boxplots.png  Seasonal patterns by calendar quarter
-│   ├── 08_quarter_scorecard.png     Descriptive seasonal rankings
-│   ├── lag_correlations.csv         Modeling lag correlations and selections
-│   ├── lag_stability.csv            Lag-selection stability results
-│   ├── long_run_model_summary.txt   Long-run regression summary
-│   ├── recent_model_summary.txt     Recent regression summary
-│   ├── model_summary.csv            Model sample sizes and fit statistics
-│   ├── results_table.csv            Coefficients, uncertainty, p-values, and VIF
-│   ├── long_run_fitted_residuals.csv Long-run fitted values and residuals
-│   └── recent_fitted_residuals.csv   Recent fitted values and residuals
+│   ├── EVALUATION_TABLES/
+│   │   ├── 01_crisis_period_shifts.csv      Coefficient shifts when crisis periods are dummied out or dropped
+│   │   ├── 02_diagnostics.csv               Residual diagnostics: autocorrelation, heteroskedasticity, normality
+│   │   ├── 03_equal_strength_tests.csv      Wald tests comparing predictor strengths
+│   │   ├── 04_final_model_summary.csv       Final model sample sizes and fit statistics
+│   │   ├── 05_final_model_summary.png       Image of the final model summary table
+│   │   ├── 06_final_results_table.csv       Final coefficients, confidence intervals, p-values, and VIF
+│   │   ├── 07_flagged_quarters.csv          Quarters flagged as influential by two or more checks
+│   │   ├── 08_influence_measures.csv        Cook's D, studentized residuals, leverage, and DFBETAS per quarter
+│   │   ├── 09_outlier_sensitivity.csv       Coefficients under baseline, crisis-dummy, and crisis-dropped models
+│   │   ├── 10_robustness_checks.csv         Results under alternative Newey-West lags and a no-listings model
+│   │   └── 11_robustness_p_values.csv       P-values for each robustness specification
+│   ├── 01_quarterly_trends.png          Initial plots of the four series in original units
+│   ├── 02_hpi_growth_distribution.png   Initial histogram of annual HPI growth
+│   ├── 03_coverage_table.csv            Variable coverage and missing-value counts
+│   ├── 04_timeseries_yoy.png            Annual-change time-series panels
+│   ├── 05_summary_stats.csv             Summary statistics by analysis window
+│   ├── 06_histograms_yoy.png            Annual-change distributions
+│   ├── 07_correlation_heatmaps.png      Correlations by analysis window
+│   ├── 08_lag_correlations.png          Exploratory correlations at lags 0–4
+│   ├── 09_seasonality_boxplots.png      Seasonal patterns by calendar quarter
+│   ├── 10_quarter_scorecard.png         Descriptive seasonal rankings
+│   ├── 11_lag_correlations.csv          Modeling lag correlations and selections
+│   ├── 12_lag_stability.csv             Lag-selection stability results
+│   ├── 13_results_table.csv             Coefficients, uncertainty, p-values, and VIF
+│   ├── 14_model_summary.csv             Model sample sizes and fit statistics
+│   ├── 15_long_run_model_summary.txt    Long-run regression summary
+│   ├── 16_recent_model_summary.txt      Recent regression summary
+│   ├── 17_long_run_fitted_residuals.csv Long-run fitted values and residuals
+│   ├── 18_recent_fitted_residuals.csv   Recent fitted values and residuals
+│   ├── 19_actual_vs_fitted.png          Actual vs. fitted HPI growth for both models
+│   ├── 20_coefficient_plot.png          Standardized coefficients with 95% confidence intervals
+│   ├── 21_lag_stability.png             How often each lag won in the bootstrap resamples
+│   ├── 22_mortgage_vs_hpi_growth.png    Mortgage-rate changes vs. HPI growth
+│   ├── 23_influential_quarters.png      Cook's distance, with influential quarters labeled
+│   └── 24_outlier_sensitivity.png       Coefficient changes with crisis dummies or crisis quarters dropped
 ├── SCRIPTS/
-│   ├── 01_preprocess_data.py         Clean, align, and export quarterly data
-│   ├── 02_exploratory_plots.R        Generate the two initial descriptive plots
+│   ├── 01_preprocess_data.py            Clean, align, and export quarterly data
+│   ├── 02_exploratory_plots.R           Generate the two initial descriptive plots
 │   ├── 03_variable_and_lag_analysis.Rmd Expanded EDA, lags, and seasonality
-│   └── 04_regression_models.ipynb    Select lags, fit models, and export results
+│   ├── 04_regression_models.ipynb       Select lags, fit models, and export results
+│   └── 05_model_evaluation.ipynb        Diagnostics, robustness, outlier analysis, final tables
 ├── LICENSE.md                       MIT license for code
 ├── requirements.txt                 Python preprocessing dependency (pandas)
 ├── .gitignore                       Temporary files and Python caches
