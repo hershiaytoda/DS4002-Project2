@@ -237,6 +237,34 @@ For each model, this notebook reports:
 
 ---
 
+### Step 6: Evaluate the models, test outliers, and create final tables
+
+Run: `SCRIPTS/05_model_evaluation.ipynb`. Open it in Jupyter and choose **Kernel → Restart & Run All**. In Google Colab, use **Runtime → Run all**; in Colab it clones this repository automatically if `DATA/` is not found.
+
+The notebook needs the same packages as Step 4, plus `matplotlib`. It reads `DATA/cleaned_quarterly.csv` and the Step 4 outputs `OUTPUT/11_…` through `OUTPUT/18_…`, so complete Step 4 first. It stops with a clear error message if any of those files is missing. No settings need to be changed.
+
+The notebook does the following, in order:
+
+1. **Refits both models and checks the refit.** It refits each Step 4 model from the saved lag selections and confirms the coefficients match `13_results_table.csv`, so the evaluation is built on the same models.
+2. **Plots model fit.** It compares actual and fitted price growth, shows standardized coefficients with 95% confidence intervals, shows how often each lag won in the bootstrap resamples, and plots mortgage-rate changes against price growth.
+3. **Runs residual diagnostics.** For each model it tests residual autocorrelation (Durbin-Watson and Ljung-Box), non-constant variance (Breusch-Pagan), and non-normality (Jarque-Bera).
+4. **Checks robustness.** It reruns the models with wider Newey-West lags (6 and 8) and with a version that leaves out active listings, using the same quarters. It also runs Wald tests of whether predictors have equal strength.
+5. **Finds influential quarters.** For each quarter it computes Cook's distance, studentized residuals, leverage, and DFBETAS. A quarter is flagged when two or more of these checks exceed their thresholds.
+6. **Tests sensitivity to crisis periods.** It refits each model three ways: baseline, with dummy variables for the 2007 Q4–2009 Q2 recession and 2020 Q1–2022 Q4 pandemic periods, and with those quarters dropped. It then reports how much each coefficient moves.
+7. **Saves the final results tables** and an environment file listing package versions.
+
+**Outputs:**
+
+| Location | Files | Contents |
+|---|---|---|
+| `OUTPUT/` | `19_actual_vs_fitted.png`, `20_coefficient_plot.png`, `21_lag_stability.png`, `22_mortgage_vs_hpi_growth.png` | Model-fit figures: actual vs. fitted, coefficient plot, lag stability, mortgage vs. price growth |
+| `OUTPUT/` | `23_influential_quarters.png`, `24_outlier_sensitivity.png` | Cook's distance with flagged quarters labeled, and coefficient changes under the crisis specifications |
+| `OUTPUT/EVALUATION_TABLES/` | `01_…` through `11_…` | Diagnostics, robustness checks, influence measures, flagged quarters, outlier sensitivity, and the final results and model-summary tables |
+
+**Check:** the refit in item 1 should report that it matches Step 4's coefficients. The bootstrap is not rerun here, so the notebook finishes in under a minute.
+
+---
+
 ### Step 7: Compare your results with ours
 
 Our final results are in `[OUTPUT/]` and summarized in our final presentation. If you used the data files from Option A, your coefficients, p-values, and R² values should match ours to at least 3 decimal places. If they don't, check the following:
