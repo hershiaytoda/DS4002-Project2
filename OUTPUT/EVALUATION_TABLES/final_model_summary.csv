@@ -1,0 +1,3 @@
+model,n_quarters,R2,adj_R2,n_significant_predictors,selected_lags
+long_run,140,0.133,0.121,1,"Unemployment (YoY pp), lag 1, Mortgage rate (YoY pp), lag 0"
+recent,31,0.692,0.658,3,"Unemployment (YoY pp), lag 1, Mortgage rate (YoY pp), lag 0, Active listings (YoY %), lag 4"

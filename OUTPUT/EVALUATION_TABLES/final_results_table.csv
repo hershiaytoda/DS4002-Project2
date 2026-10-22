@@ -1,0 +1,8 @@
+model,Predictor,Coefficient,95% CI,p-value,Rank,VIF
+long_run,Intercept,4.494,"[2.76, 6.23]",<0.001,,
+long_run,"Mortgage rate (YoY pp), lag 0",1.564,"[0.30, 2.83]",0.016,1,1.04
+long_run,"Unemployment (YoY pp), lag 1",-0.916,"[-2.14, 0.31]",0.142,2,1.04
+recent,Intercept,7.017,"[5.60, 8.44]",<0.001,,
+recent,"Active listings (YoY %), lag 4",-2.107,"[-3.81, -0.40]",0.017,1,1.32
+recent,"Mortgage rate (YoY pp), lag 0",1.899,"[1.19, 2.60]",<0.001,2,1.31
+recent,"Unemployment (YoY pp), lag 1",-1.006,"[-1.79, -0.22]",0.014,3,1.17

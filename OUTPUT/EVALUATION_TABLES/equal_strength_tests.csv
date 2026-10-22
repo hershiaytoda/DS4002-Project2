@@ -1,0 +1,5 @@
+model,predictor_A,predictor_B,coef_A,coef_B,p_equal_strength
+long_run,"Unemployment (YoY pp), lag 1","Mortgage rate (YoY pp), lag 0",-0.9156225236421569,1.5638228056972143,0.40664248221272936
+recent,"Unemployment (YoY pp), lag 1","Mortgage rate (YoY pp), lag 0",-1.006444696799326,1.8991016553047468,0.036700374101914186
+recent,"Unemployment (YoY pp), lag 1","Active listings (YoY %), lag 4",-1.006444696799326,-2.1069872524546702,0.27111438283993333
+recent,"Mortgage rate (YoY pp), lag 0","Active listings (YoY %), lag 4",1.8991016553047468,-2.1069872524546702,0.8497623406948143
