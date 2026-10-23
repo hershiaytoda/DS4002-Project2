@@ -13,8 +13,8 @@ from macOS or Linux; a full run on every platform has not been verified.
 
 - Python 3.10 or newer, with pandas, NumPy, statsmodels, matplotlib, IPython,
   and Jupyter Notebook. Install with `python -m pip install -r requirements.txt`.
-- R and RStudio: script 02 uses base R; script 03 needs ggplot2, dplyr,
-  lubridate, tidyr, readr, scales, and purrr. Run its R chunks in RStudio.
+- R and RStudio: script 02 uses base R; script 03 needs ggplot2(4.0,2), dplyr(1.1.4),
+  lubridate(1.9.4), tidyr(1.3.2), readr(2.2.0), scales(1.4.0), and purrr(1.2.1). Run its R chunks in RStudio.
 
 Dependency versions are not fully pinned. The evaluation notebook records its
 Python package versions when run.
