@@ -2,3 +2,6 @@ __pycache__/
 *.py[cod]
 .venv/
 tmp/
+
+# Local evaluation download bundle
+evaluation_results.zip

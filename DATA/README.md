@@ -87,49 +87,42 @@ Each cleaned row is one quarter. Blank numeric cells mean missing, not zero.
 | `unemployment_rate_yoy_pp` | Unemployment change over four quarters, percentage points |
 | `active_listings_yoy_pct` | Listing percentage change over four quarters |
 
-## What partners do next
+## Team responsibilities
 
-A **lag** compares an earlier predictor with the outcome quarter. For example,
-lag 1 pairs the predictor's 2025 Q1 annual change with 2025 Q2 HPI growth. Lag 0
-uses the same quarter; lag 4 uses one year earlier. This delay is separate from
-calculating the annual change itself.
+- **Andrew:** data preprocessing, cleaning, and data documentation.
+- **Haero:** lag selection and regression modeling.
+- **Hershi:** exploratory plots, statistical evaluation, diagnostics, and results figures/tables.
 
-The MI2 plan first compares each predictor individually at lags 0-4, then fits
-selected predictors **together** in multiple regression. A coefficient tests
-whether that predictor is associated with HPI growth after accounting for the
-others. Lag comparisons/selection are exploratory; time-series tests should not
-assume all quarters are independent.
+## Analysis status and study period
 
-Haero: use this CSV for both MI2 windows (1990-2025: mortgage/unemployment;
-2016 Q3-2025: add listings). Create lags on the continuous calendar first, then
-filter the window and drop missing rows for the chosen variables. Choose/report
-lags, standardize on the actual model sample, fit the models, and use Newey-West
-standard errors with maximum lag 4 as planned [6]. The CSV retains 2026 data for
-transparency; exclude it from the planned 2025 study windows. Usable samples
-start later than the raw windows because annual changes need four prior quarters
-(unemployment changes begin 1991 Q1; listing changes begin 2017 Q3), and lags
-require more history. Compare models with/without listings on the same recent
-sample when assessing listings' additional contribution.
+The analysis is complete in `SCRIPTS/04_regression_models.ipynb` and
+`SCRIPTS/05_model_evaluation.ipynb`. Predictors are lagged on the continuous
+calendar before incomplete model rows are dropped, standardized on the model
+sample, and fitted together using OLS with Newey-West standard errors (maximum
+lag 4). Lag selection and significance tests are exploratory.
 
-Hershi: report sample sizes, coefficients, confidence intervals, p-values, R-squared,
-adjusted R-squared, VIF, and residual diagnostics. Save analysis figures/tables in
-OUTPUT and add reproducible analysis scripts and references. The cleaning and
-exploratory plots are ready; the models and statistical results remain unfinished.
+The documented MI2 plan ended in 2025. The committed analysis instead uses the
+available snapshot through 2026 Q2; this is a departure from that plan. The saved
+long-run model has 140 quarters (1991 Q2-2026 Q2), and the recent model has 31
+quarters (2018 Q3-2026 Q2). Missing values and lags reduce the usable samples.
+The evaluation includes a comparison with and without listings on the same recent
+quarters, residual diagnostics, crisis-period sensitivity, and robustness checks.
+Results are stored in `OUTPUT/` and `OUTPUT/EVALUATION_TABLES/`.
 
 ## Explanatory plots
 
 The MI2 assigns exploratory plots/statistical analysis to Hershi and preprocessing
 to Andrew. These descriptive figures provide the two plots required by MI3's data
 documentation and can serve as starting material for Hershi to review or revise.
-They do not replace Haero's models or Hershi's statistical tests and result figures.
+Haero's fitted models and Hershi's statistical tests and result figures are provided separately in OUTPUT.
 
-![Quarterly housing-market and economic series](../OUTPUT/quarterly_trends.png)
+![Quarterly housing-market and economic series](../OUTPUT/01_quarterly_trends.png)
 
 Figure 1. Separate panels keep each series in its original units and show its
 actual coverage. HPI trends upward, listings start in 2016, and unemployment has
 a large 2020 spike. These patterns alone do not rank predictors.
 
-![Year-over-year HPI growth distribution](../OUTPUT/hpi_growth_distribution.png)
+![Year-over-year HPI growth distribution](../OUTPUT/02_hpi_growth_distribution.png)
 
 Figure 2. Distribution of quarterly year-over-year HPI growth, the planned
 regression outcome. The dashed line marks zero growth. This describes the outcome

@@ -1,12 +1,12 @@
 ---
-title: "03_variable_and_lag_analysis.R"
+title: "03_variable_and_lag_analysis.Rmd"
 output:
   pdf_document: default
   html_notebook: default
 ---
 
 # =====================================================================
-# SCRIPT:   03_variable_and_lag_analysis.R
+# SCRIPT:   03_variable_and_lag_analysis.Rmd
 # PROJECT:  Spider-Sense: A Time-Series Analysis of Housing Market
 #           Factors in Charlottesville
 # COURSE:   DS 4002, Section 001  |  TEAM: Dataverse
@@ -27,17 +27,15 @@ output:
 #     unemployment_rate_yoy_pp  unemployment YoY change (percentage points)
 #     active_listings_yoy_pct   listings YoY % change
 #
-# OUTPUT (all written to the eda_output/ folder)
+# OUTPUT (all written to the OUTPUT/ folder)
 #   PNG figures
 
 #
 # HOW TO RUN
 #   1. Open the project folder in RStudio (or setwd() to the project
 #      root) so that DATA/cleaned_quarterly.csv is found by its relative path.
-#   2. Run the whole file from the top: Source it, or in a terminal use
-#      Rscript 03_variable_and_lag_analysis.R
-#      Do not run chunks out of order; later sections use objects
-#      created in earlier ones.
+#   2. Open this .Rmd in RStudio and run the R chunks from top to bottom.
+#      Later chunks use objects created in earlier ones.
 
 
  
@@ -73,7 +71,7 @@ head(data)
 tail(data)
 
 LAST_FULL_QUARTER_START <- as.Date("2026-04-01")   # keeps through 2026Q2
-OUT_DIR   <- "eda_output"                 # plots and tables are saved here
+OUT_DIR   <- "OUTPUT"                 # plots and tables are saved here
 dir.create(OUT_DIR, showWarnings = FALSE)
 theme_set(theme_minimal(base_size = 12))
  
@@ -177,7 +175,7 @@ coverage <- df %>%
   )
 print(coverage)
 
-write_csv(coverage, file.path(OUT_DIR, "01_coverage_table.csv"))
+write_csv(coverage, file.path(OUT_DIR, "03_coverage_table.csv"))
 ```
 
 
@@ -207,7 +205,7 @@ ts_plot <- function(vars, title, name) {
          x = NULL, y = NULL, caption = "Source: FRED")
   save_plot(p, name, h = 9)
 }
-ts_plot(yoy_all, "Year-over-year changes over time", "03_timeseries_yoy")
+ts_plot(yoy_all, "Year-over-year changes over time", "04_timeseries_yoy")
  
 ```
 
@@ -231,7 +229,7 @@ p_hist <- ggplot(yoy_long, aes(value)) +
   geom_histogram(bins = 30, fill = "#2b6cb0", color = "white") +
   facet_wrap(~variable, scales = "free") +   # each variable has its own x and y scale
   labs(title = "Distributions of year-over-year changes", x = NULL, y = "Quarters")
-save_plot(p_hist, "04_histograms_yoy")
+save_plot(p_hist, "06_histograms_yoy")
  
 # Summary statistics (n, mean, median, SD, min, max) for each variable
 # within each analysis window.
@@ -249,7 +247,7 @@ summary_stats <- map_dfr(names(windows), function(w) {
     mutate(window = w, .before = 1)
 })
 print(summary_stats, n = Inf)
-write_csv(summary_stats, file.path(OUT_DIR, "03_summary_stats.csv"))
+write_csv(summary_stats, file.path(OUT_DIR, "05_summary_stats.csv"))
 
 
 
@@ -286,7 +284,7 @@ p_cor <- ggplot(cor_long, aes(var1, var2, fill = r)) +
   facet_wrap(~window) +
   labs(title = "Correlations among YoY variables", x = NULL, y = NULL) +
   theme(axis.text.x = element_text(angle = 30, hjust = 1))
-save_plot(p_cor, "05_correlation_heatmaps", w = 12, h = 5.5)
+save_plot(p_cor, "07_correlation_heatmaps", w = 12, h = 5.5)
  
 # ---- 5b. Lagged correlations with HPI growth ------------------------
 # For lag k, we compare HPI growth in quarter t with the predictor's
@@ -310,7 +308,7 @@ lag_cors <- map_dfr(names(windows), function(w) {
   })
 })
 print(lag_cors, n = Inf)
-write_csv(lag_cors, file.path(OUT_DIR, "05_lag_correlations.csv"))
+write_csv(lag_cors, file.path(OUT_DIR, "eda_lag_correlations.csv"))
  
 # Bar chart of correlation by lag, one panel per predictor and window.
 # Blue bars are positive correlations and red bars are negative.
@@ -326,7 +324,7 @@ p_lag <- lag_cors %>%
        subtitle = "Lag k = predictor measured k quarters earlier",
        caption = "Exploratory only: lags are chosen on the same data.",
        x = "Lag (quarters)", y = "Correlation")
-save_plot(p_lag, "06_lag_correlations", w = 12, h = 6)
+save_plot(p_lag, "08_lag_correlations", w = 12, h = 6)
  
 ```
 
@@ -374,7 +372,7 @@ p_seas <- ggplot(seas, aes(factor(q, labels = paste0("Q", 1:4)), value)) +
   facet_wrap(~metric, scales = "free_y") +
   labs(title = "Seasonal pattern by quarter of year", x = NULL, y = NULL,
        caption = "Listings are only available from 2016, so that panel has far fewer observations.")
-save_plot(p_seas, "08_seasonality_boxplots", w = 11, h = 7)
+save_plot(p_seas, "09_seasonality_boxplots", w = 11, h = 7)
  
 # Average, standard error, and sample size for each metric and quarter.
 seas_summary <- seas %>%
@@ -405,11 +403,11 @@ p_score <- ggplot(scorecard, aes(factor(q, labels = paste0("Q", 1:4)), metric, f
   geom_tile(color = "white") +
   geom_text(aes(label = rank)) +
   scale_fill_gradient(low = "#9ae6b4", high = "#fbb6b6", breaks = 1:4,
-                      name = "Rank\n(1 = bxest for buyer)") +
+                      name = "Rank\n(1 = best for buyer)") +
   labs(title = "Which quarter looks best for a buyer? (descriptive, not advice)",
        subtitle = "Ranks of average seasonal pattern; flip the rankings for a seller's view",
        x = NULL, y = NULL)
-save_plot(p_score, "09_quarter_scorecard", w = 10, h = 4)
+save_plot(p_score, "10_quarter_scorecard", w = 10, h = 4)
  
  
 
