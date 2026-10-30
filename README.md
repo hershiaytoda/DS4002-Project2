@@ -11,7 +11,7 @@ exploratory analysis. Preprocessing was reported as tested on Windows with Pytho
 3.12 and pandas 3.0.1. The repository uses relative paths and can also be opened
 from macOS or Linux; a full run on every platform has not been verified.
 
-- Python 3.10 or newer, with pandas, NumPy, statsmodels, matplotlib, IPython,
+- Python 3.10 or newer, with pandas(2.2.3), NumPy(2.1.3), statsmodels(0.15.0), matplotlib(3.10,0), IPython(7.34.0),
   and Jupyter Notebook. Install with `python -m pip install -r requirements.txt`.
 - R and RStudio: script 02 uses base R; script 03 needs knitr, ggplot2, dplyr,
   lubridate, tidyr, readr, scales, and purrr. Run its R chunks in RStudio.
