@@ -11,10 +11,12 @@ exploratory analysis. Preprocessing was reported as tested on Windows with Pytho
 3.12 and pandas 3.0.1. The repository uses relative paths and can also be opened
 from macOS or Linux; a full run on every platform has not been verified.
 
-- Python 3.10 or newer, with pandas(2.2.3), NumPy(2.1.3), statsmodels(0.15.0), matplotlib(3.10,0), IPython(7.34.0),
+- Python 3.10 or newer, with pandas (2.2.3), NumPy (2.1.3), statsmodels (0.15.0),
+  matplotlib (3.10.0), IPython (7.34.0),
   and Jupyter Notebook. Install with `python -m pip install -r requirements.txt`.
-- R and RStudio: script 02 uses base R; script 03 needs knitr, ggplot2, dplyr,
-  lubridate, tidyr, readr, scales, and purrr. Run its R chunks in RStudio.
+- R and RStudio: script 02 uses base R; script 03 needs knitr, ggplot2 (4.0.2),
+  dplyr (1.1.4), lubridate (1.9.4), tidyr (1.3.2), readr (2.2.0), scales (1.4.0),
+  and purrr (1.2.1). Run its R chunks in RStudio.
 
 Dependency versions are not fully pinned. The evaluation notebook records its
 Python package versions when run.
@@ -79,6 +81,7 @@ DS4002-Project2/
 │   ├── 03_variable_and_lag_analysis.Rmd Expanded EDA, lags, and seasonality
 │   ├── 04_regression_models.ipynb       Select lags, fit models, and export results
 │   └── 05_model_evaluation.ipynb        Diagnostics, robustness, outlier analysis, final tables
+├── Group4_Project2_MI4 (4).pdf       Final presentation slide show
 ├── LICENSE.md                       MIT license for code
 ├── requirements.txt                 Python analysis and notebook dependencies
 ├── .gitignore                       Temporary files and Python caches
