@@ -13,7 +13,7 @@ from macOS or Linux; a full run on every platform has not been verified.
 
 - Python 3.10 or newer, with pandas, NumPy, statsmodels, matplotlib, IPython,
   and Jupyter Notebook. Install with `python -m pip install -r requirements.txt`.
-- R and RStudio: script 02 uses base R; script 03 needs ggplot2, dplyr,
+- R and RStudio: script 02 uses base R; script 03 needs knitr, ggplot2, dplyr,
   lubridate, tidyr, readr, scales, and purrr. Run its R chunks in RStudio.
 
 Dependency versions are not fully pinned. The evaluation notebook records its
@@ -43,7 +43,10 @@ DS4002-Project2/
 │   │   ├── 08_influence_measures.csv        Cook's D, studentized residuals, leverage, and DFBETAS per quarter
 │   │   ├── 09_outlier_sensitivity.csv       Coefficients under baseline, crisis-dummy, and crisis-dropped models
 │   │   ├── 10_robustness_checks.csv         Results under alternative Newey-West lags and a no-listings model
-│   │   └── 11_robustness_p_values.csv       P-values for each robustness specification
+│   │   ├── 11_robustness_p_values.csv       P-values for each robustness specification
+│   │   ├── 12_final_results_table.png      Image of the final coefficient results table
+│   │   ├── 13_outlier_sensitivity_pivot.csv Coefficients and p-values by crisis specification
+│   │   └── 14_evaluation_environment.txt   Python and package versions used for evaluation
 │   ├── 01_quarterly_trends.png          Initial plots of the four series in original units
 │   ├── 02_hpi_growth_distribution.png   Initial histogram of annual HPI growth
 │   ├── 03_coverage_table.csv            Variable coverage and missing-value counts
@@ -67,7 +70,9 @@ DS4002-Project2/
 │   ├── 21_lag_stability.png             How often each lag won in the bootstrap resamples
 │   ├── 22_mortgage_vs_hpi_growth.png    Mortgage-rate changes vs. HPI growth
 │   ├── 23_influential_quarters.png      Cook's distance, with influential quarters labeled
-│   └── 24_outlier_sensitivity.png       Coefficient changes with crisis dummies or crisis quarters dropped
+│   ├── 24_outlier_sensitivity.png       Coefficient changes with crisis dummies or crisis quarters dropped
+│   ├── eda_lag_correlations.csv         Expanded EDA correlations by predictor, window, and lag
+│   └── evaluation_results.zip           Evaluation figures 19-24 and tables 01-14, with OUTPUT/ paths
 ├── SCRIPTS/
 │   ├── 01_preprocess_data.py            Clean, align, and export quarterly data
 │   ├── 02_exploratory_plots.R           Generate the two initial descriptive plots
@@ -80,11 +85,8 @@ DS4002-Project2/
 └── README.md                        Project overview and reproduction instructions
 ```
 
-Rerunning the expanded EDA also writes `OUTPUT/eda_lag_correlations.csv`.
-Evaluation also creates a final-results table image, an outlier-sensitivity pivot,
-and an environment record in `OUTPUT/EVALUATION_TABLES/`, plus
-`evaluation_results.zip` at the repository root. These supplementary files are
-not all included in the committed snapshot.
+The map includes generated outputs; some supplementary files are not included in
+the committed snapshot and are created when the scripts are rerun.
 
 ## Section 3: Instructions for Reproducing Our Results
 
@@ -104,7 +106,7 @@ python -m pip install -r requirements.txt
 Install the expanded EDA packages from the R console:
 
 ```r
-install.packages(c("ggplot2", "dplyr", "lubridate", "tidyr", "readr", "scales", "purrr"))
+install.packages(c("knitr", "ggplot2", "dplyr", "lubridate", "tidyr", "readr", "scales", "purrr"))
 ```
 
 ### Step 1: Use the included data
@@ -158,9 +160,11 @@ Rscript SCRIPTS/02_exploratory_plots.R
 This writes `OUTPUT/01_quarterly_trends.png` and
 `OUTPUT/02_hpi_growth_distribution.png`.
 
-Open `SCRIPTS/03_variable_and_lag_analysis.Rmd` in RStudio, set the working
-directory to the repository root, and run its R chunks from top to bottom.
-It reads `DATA/cleaned_quarterly.csv` and writes directly to `OUTPUT/`.
+Open `SCRIPTS/03_variable_and_lag_analysis.Rmd` in RStudio and run its R chunks
+from top to bottom. Its setup chunk locates the repository root from either the
+root or `SCRIPTS/` directory and sets the knitting directory to that root.
+It reads `DATA/cleaned_quarterly.csv` and writes directly to `OUTPUT/` using
+absolute paths, so interactive chunks also work from `SCRIPTS/`.
 Outputs 03-10 contain coverage, annual-change plots, summary statistics,
 histograms, correlations, lag plots, seasonality, and a descriptive scorecard.
 Its extra `eda_lag_correlations.csv` is separate from the model lag-selection table.
@@ -205,7 +209,10 @@ figures 19-24, and writes diagnostics and final tables to
 `OUTPUT/EVALUATION_TABLES/`. Checks include residual autocorrelation,
 heteroskedasticity, normality, alternative Newey-West settings, a same-sample
 model without listings, predictor-strength tests, influential quarters, and
-crisis-period sensitivity. The final cell creates `evaluation_results.zip`.
+crisis-period sensitivity. The final cell creates `OUTPUT/evaluation_results.zip`
+containing only this notebook's figures 19-24 and evaluation tables 01-14
+(including table images and the environment record), with `OUTPUT/` paths
+preserved inside the archive.
 
 ### Step 6: Check and interpret results
 

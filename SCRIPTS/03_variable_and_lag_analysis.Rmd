@@ -5,6 +5,7 @@ output:
   html_notebook: default
 ---
 
+```{r script-info, eval=FALSE, include=FALSE}
 # =====================================================================
 # SCRIPT:   03_variable_and_lag_analysis.Rmd
 # PROJECT:  Spider-Sense: A Time-Series Analysis of Housing Market
@@ -28,25 +29,42 @@ output:
 #     active_listings_yoy_pct   listings YoY % change
 #
 # OUTPUT (all written to the OUTPUT/ folder)
-#   PNG figures
+#   PNG: 04_timeseries_yoy.png, 06_histograms_yoy.png,
+#        07_correlation_heatmaps.png, 08_lag_correlations.png,
+#        09_seasonality_boxplots.png, 10_quarter_scorecard.png
+#   CSV: 03_coverage_table.csv, 05_summary_stats.csv,
+#        eda_lag_correlations.csv
 
 #
 # HOW TO RUN
-#   1. Open the project folder in RStudio (or setwd() to the project
-#      root) so that DATA/cleaned_quarterly.csv is found by its relative path.
+#   1. Install the packages listed in README.md's setup instructions.
 #   2. Open this .Rmd in RStudio and run the R chunks from top to bottom.
-#      Later chunks use objects created in earlier ones.
+#      Start from the project root or SCRIPTS/; setup resolves both locations.
+#      Later chunks use objects created in earlier ones. Knitting also works.
+```
 
 
  
 
 
-```{r}
+```{r setup}
+
+# Resolve paths before loading data. RStudio normally runs chunks from SCRIPTS/.
+root_candidates <- c(getwd(), file.path(getwd(), ".."))
+root_candidates <- root_candidates[
+  file.exists(file.path(root_candidates, "DATA", "cleaned_quarterly.csv"))
+]
+if (length(root_candidates) == 0) {
+  stop("Cannot find DATA/cleaned_quarterly.csv. Run from the project root or SCRIPTS/.")
+}
+PROJECT_ROOT <- normalizePath(root_candidates[[1]], winslash = "/", mustWork = TRUE)
+knitr::opts_knit$set(root.dir = PROJECT_ROOT)
+DATA_PATH <- file.path(PROJECT_ROOT, "DATA", "cleaned_quarterly.csv")
+OUT_DIR <- file.path(PROJECT_ROOT, "OUTPUT")
 
 # 1. LOAD AND PREPARE THE DATA
 
-# Install any required package that is missing, then load all of them.
-# tidyverse supplies dplyr, tidyr, ggplot2, readr, purrr, tibble, etc.
+# Load the required packages; install them first using README.md's R setup command.
 
  
 # Read the cleaned CSV, then:
@@ -64,14 +82,12 @@ library(readr)
 library(scales)
 library(purrr)
 
-DATA_PATH <- "DATA/cleaned_quarterly.csv"  # relative to the repository root
 data <- read.csv(DATA_PATH)
 
 head(data)
 tail(data)
 
 LAST_FULL_QUARTER_START <- as.Date("2026-04-01")   # keeps through 2026Q2
-OUT_DIR   <- "OUTPUT"                 # plots and tables are saved here
 dir.create(OUT_DIR, showWarnings = FALSE)
 theme_set(theme_minimal(base_size = 12))
  
